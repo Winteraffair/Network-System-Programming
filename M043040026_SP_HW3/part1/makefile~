@@ -1,0 +1,7 @@
+myls:myls_M043040026.o
+	gcc myls_M043040026.o -o myls
+myls_M043040026.o:myls_M043040026.c
+	gcc -c myls_M043040026.c
+
+clean:
+	rm -rf myls mylsM043040026.o

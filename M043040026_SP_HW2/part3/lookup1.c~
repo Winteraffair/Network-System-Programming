@@ -1,0 +1,41 @@
+/*
+ * lookup1 : straight linear search through a local file
+ * 	         of fixed length records. The file name is passed
+ *	         as resource.
+ */
+#include <string.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include "dict.h"
+
+int lookup(Dictrec * sought, const char * resource) {
+	Dictrec dr;
+	static FILE * in;
+	static int first_time = 1;
+
+	if (first_time) { 
+		first_time = 0;
+		/* open up the file
+		 *
+		 * Fill in code. */
+		if ((in =fopen(resource,"r")) == NULL){DIE(resource);}
+	}
+
+	/* read from top of file, looking for match
+	 *
+	 * Fill in code. */
+	rewind(in);
+	while(!feof(in)) {
+		/* Fill in code. */
+		fread(&dr.word,sizeof(dr.word),1,in);
+		if(strncmp(dr.word,sought->word,sizeof(char)*(strlen(dr.word)-1)) == 0){
+		    fread(&dr.text,sizeof(dr.text),1,in);
+                    strcpy(sought->text,dr.text);
+		    return FOUND;
+		}
+		else 
+		    fread(&dr.text,sizeof(dr.text),1,in);
+	//}
+	
+	return NOTFOUND;
+}

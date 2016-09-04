@@ -1,0 +1,19 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <sys/utsname.h>
+#include <sys/types.h>
+
+int main(void){
+	struct utsname uts;
+	
+	if(uname(&uts) == -1){
+	    perror("myuname.c:main:uname");
+	    exit(0);
+	}
+	
+	printf("Hostname: %s\n",uts.nodename);
+	printf("%s %s %s\n",uts.sysname,uts.release,uts.machine);
+	printf("hostid: %d\n",gethostid());
+	
+	exit(0);
+}

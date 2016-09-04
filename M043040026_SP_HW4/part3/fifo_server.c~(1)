@@ -1,0 +1,90 @@
+/*
+ * fifo_server : listen on a named pipe; do lookup ; reply
+ *               down another named pipe, the name of which
+ *               will be sent by the client (in cli.id)
+ *               argv[1] is the name of the local fil
+ *               argv[2] is the name of the "well-known" FIFO
+ */
+
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "dict.h"
+
+int main(int argc, char **argv) {
+	struct stat stbuff;
+	int read_fd,write_fd;
+	Client cli;
+	Dictrec tryit;
+
+	if (argc != 3) {
+		fprintf(stderr,"Usage : %s <dictionary source> ""<resource / FIFO>\n",argv[0]);
+		exit(errno);
+	}
+
+	/* Check for existence of dictionary and FIFO (both must exist)
+	 *
+	 * Fill in code. */
+        if(stat(argv[1],&stbuff)==-1 || S_ISREG(stbuff.st_mode)==-1){
+          printf("dictionary isn't existing\n");
+          exit(0);
+        }
+        if(stat(argv[2],&stbuff)==-1 || S_ISFIFO(stbuff.st_mode)==-1){
+          printf("FIFO isn't existing\n");
+          exit(0);
+        }
+	/* Open FIFO for reading (blocks until a client connects)
+	 *
+	 * Fill in code. */
+        
+        if((read_fd = open(argv[2],O_RDONLY))==-1){
+          perror("open");
+          exit(1); 
+        }
+	/* Sit in a loop. lookup word sent and send reply down the given FIFO */
+	for (;;) {
+
+		/* Read request.
+		 *
+		 * Fill in code. */
+                read(read_fd,&cli,sizeof(Client));
+		/* Get name of reply fifo and attempt to open it.
+		 *
+		 * Fill in code. */
+                if((write_fd = open(cli.id,O_WRONLY))==-1){
+                  perror("open");
+                  exit(1); 
+                }
+                printf("%s\n",cli.word);
+                cli.word[strlen(cli.word)+1]='\0';
+                strcpy(tryit.word,cli.word);
+		/* lookup the word , handling the different cases appropriately
+		 *
+		 * Fill in code. */
+		switch(lookup(&tryit,argv[1]) ) {
+			case FOUND:
+				/* Fill in code. */ 
+                                write(write_fd,&tryit.text,sizeof(tryit.text));
+				break;
+			case NOTFOUND:
+				/* Fill in code. */
+                                strcpy(tryit.text,"XXXX");
+                                write(write_fd,&tryit.text,sizeof(tryit.text));
+				break;
+			case UNAVAIL:
+				/* Fill in code. */
+                                break;
+		}
+
+		/* close connection to this client (server is stateless)
+		 *
+		 * Fill in code. */
+                
+                close(write_fd);
+                
+	}
+}
